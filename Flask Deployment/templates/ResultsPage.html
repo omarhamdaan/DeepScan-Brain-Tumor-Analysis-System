@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Brain Tumor Analysis Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+        }
+        video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -100;
+            opacity: 0.9;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+            background: rgba(0, 0, 139, 0.3);
+        }
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+        .logo-text {
+            color: #ffffff;
+            font-size: 36px;
+            font-weight: 700;
+        }
+        .result-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .box {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            width: 45%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        .box img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        .box h2, .box p, .box h3 {
+            color: #FFF;
+        }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop>
+        <source src="{{ url_for('static', filename='BrainAnimation.mp4') }}" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+    <div class="overlay"></div>
+    <div class="logo-container">
+        <div class="logo-text">DeepScan</div>
+    </div>
+    <div class="result-container">
+        <div class="box">
+            <h2>Uploaded Image</h2>
+            {% if image_data %}
+                <img src="data:image/jpeg;base64,{{ image_data }}" alt="Uploaded MRI Image">
+            {% else %}
+                <p>No image to display.</p>
+            {% endif %}
+        </div>
+        <div class="box">
+            <h2>Predicted Tumor Type</h2>
+            {% if predicted_class == 0 %}
+                <p>No Tumor Detected</p>
+            {% elif predicted_class == 1 %}
+                <p>Meningioma</p>
+                <p>Description: A typically benign tumor often developing in the brain's meningeal tissue.</p>
+            {% elif predicted_class == 2 %}
+                <p>Glioma</p>
+                <p>Description: A form of tumor that occurs in the brain and spinal cord.</p>
+            {% elif predicted_class == 3 %}
+                <p>Pituitary Tumor</p>
+                <p>Description: A growth that develops in the pituitary gland that can affect hormone levels.</p>
+            {% endif %}
+        </div>
+        <div class="box">
+            <h2>Segmented Image</h2>
+            {% if predicted_class != 0 %}
+            <img src="data:image/png;base64,{{ segmented_image }}" alt="Segmented MRI Image">
+            {% else %}
+            <img src="data:image/png;base64,{{ black_image_base64 }}" alt="Placeholder Image">
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
